@@ -20,6 +20,9 @@ No install necessary, just do pip install -r requirements.txt from the hash-it-o
 *This is a work-in-progress.*
 
 ### Changelog:
+Version 0.1.3:
+Added the menu and the option to run the program without a known hash.
+
 Version 0.1.2:  
 Added greeting banner.  
 
