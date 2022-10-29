@@ -2,9 +2,8 @@ import os
 import hashlib
 import shutil
 import platform
-import getpass
 import requests
-import json
+
 
 '''
 The purpose of this script is to make checking and comparing file hashes easier
@@ -121,7 +120,7 @@ def vt_check(hash_one):
                 print(f'\nVirusTotal scanned your file and {positive_count} sources flagged it as malicious.')
         else:
 
-            print('Your file was not found in the Virus Total database.\n'
+            print('\nYour file was not found in the Virus Total database.\n'
                   'This does not necessarily mean the file is safe.\n'
                   'Proceed with caution! Only open the file if you are sure of its source!')
     else:
@@ -194,27 +193,51 @@ def banner():
  / __  / /_/ (__  ) / / /  _/ // /_   / /_/ / /_/ / /_  
 /_/ /_/\__,_/____/_/ /_/  /___/\__/   \____/\__,_/\__/  
 
-Created by Timothy Woodard                 version 0.1.2                                             
+Created by Timothy Woodard                 version 0.1.3                                             
     ''')
+
+
+
+def menu():
+    print('''
+Available Options:
+    
+    1) I have the file hash
+        ~This option will check a file's hash, compare it with a known hash,
+        and check the hash against known malware hashes.
+        
+    2) I don't have the file hash, but I want to check for malware
+        ~This option will check a file's hash and check it against known
+        malware hashes. 
+    ''')
+    user_choice = input('Please select an option (type 1 or 2): ')
+    return user_choice
 
 
 def main():
     try:
         banner()
         disclaimer()
-        filename = input('Enter the file name: ')
-        first_hash, filepath = file_to_check(filename)
-        second_hash = input('What is the hash supposed to be? ').lower()
-        hash_match = comparison(first_hash, second_hash)
+        menu_option = int(menu())
+        if menu_option == 1:
+            filename = input('Enter the file name: ')
+            first_hash, filepath = file_to_check(filename)
+            second_hash = input('What is the hash supposed to be? ').lower()
+            hash_match = comparison(first_hash, second_hash)
 
-        if hash_match:
-            okay_to_use()
-            vt_check(first_hash)
+            if hash_match:
+                okay_to_use()
+                vt_check(first_hash)
+            else:
+                danger_warn()
+                vt_check(first_hash)
+                store_directory = file_quarantine(filename, filepath)
+                file_be_gone(filename, store_directory)
         else:
-            danger_warn()
+            filename = input('Enter the file name: ')
+            first_hash, filepath = file_to_check(filename)
+            print(f"\nYour file's hash is: {first_hash}")
             vt_check(first_hash)
-            store_directory = file_quarantine(filename, filepath)
-            file_be_gone(filename, store_directory)
 
         another_one = input('\n\nWould you like to scan another file? Y or N: ').lower()
         if another_one == 'y':
@@ -224,7 +247,7 @@ def main():
             print('\n\nGoodbye')
             exit()
     except KeyboardInterrupt:
-        print('\n\nProgram Exiting. Goodbye.')
+        print('\n\nCaught Ctrl+C. Program Exiting. Goodbye.')
 
 
 if __name__ == '__main__':
