@@ -4,16 +4,16 @@ How can you be sure that files you've downloaded are what they're supposed to be
 
 Don't have a hash? Extra cautious? Check for known malicious hashes!  
 
-Hash It Out!  
+### Hash It Out!  
   
-*** Disclaimer ***: This script <i> is not </i>, nor is it intended to be, a malware/virus scanner, nor is it intended to replace good security practices. 
+*** **Disclaimer** ***: This script *is not*, nor is it intended to be, a malware/virus scanner, nor is it intended to replace good security practices. 
 The user assumes all liability from execution/opening/modification/etc of files. 
 Additionally, the list of known malicious hashes is <b>not</b> exhaustive, which may result in a false positive. 
 The developer holds no responsibility should a file the user checks with this script be malicious.
 By downloading and/or running this script, the user accepts this agreement and holds harmless the developer.
 
 
-Installation:
+### Installation:
 No install necessary, just do pip install -r requirements.txt from the hash-it-out directory
 
 There are two test files included in the repository. These are for testing only!
@@ -29,10 +29,12 @@ testfile2.ps1
 
 
 
-Updates:  
-<i>This is still a work-in-progress.</i>  
+### Updates:  
+*This is a work-in-progress.*
 
+### Changelog:
+Version 0.1.2:  
+Added greeting banner.  
 
- 
-Version 0.5:  
+Version 0.1.1:  
 Added integration with Virus Total for scanning for known malware signatures.
