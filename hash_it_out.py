@@ -25,8 +25,8 @@ def disclaimer():
           "exhaustive, nor does it detect Zero-Day malware. This may result in a false positive. \n"
           "Use good judgement when deciding where you get your files and whether you should run them.\n"
           "By downloading and/or running this script, the user accepts this agreement and holds\n"
-          "harmless the developer. This script is currently version 0.5, and is only compatible with \n"
-          "Windows and OSX hosts and SHA256 hashes.\n")
+          "harmless the developer. This version is currently only compatible with Windows, OS-X,\n"
+          "and SHA256 hashes\n")
 
 
 def os_check():
@@ -185,8 +185,22 @@ def danger_warn():
     ''')
 
 
+# prints a pretty banner at the start of the program
+def banner():
+    print('''
+    __  __           __       ______     ____        __ 
+   / / / /___ ______/ /_     /  _/ /_   / __ \__  __/ /_
+  / /_/ / __ `/ ___/ __ \    / // __/  / / / / / / / __/
+ / __  / /_/ (__  ) / / /  _/ // /_   / /_/ / /_/ / /_  
+/_/ /_/\__,_/____/_/ /_/  /___/\__/   \____/\__,_/\__/  
+
+Created by Timothy Woodard                 version 0.1.2                                             
+    ''')
+
+
 def main():
     try:
+        banner()
         disclaimer()
         filename = input('Enter the file name: ')
         first_hash, filepath = file_to_check(filename)
