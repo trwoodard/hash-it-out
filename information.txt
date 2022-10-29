@@ -18,7 +18,10 @@ testfile2.ps1
 -SHA256: 702de94116e6e5826b4cb7a1a5e0be1f55ee6761533119bc08994af78fd040af
 
 Updates:
-This is still a work-in-progress.
+This is a work-in-progress.
 
-Version 0.5:
+Version 0.1.2:  
+Added greeting banner.  
+
+Version 0.1.1:  
 Added integration with Virus Total for scanning for known malware signatures.
