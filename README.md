@@ -16,19 +16,6 @@ By downloading and/or running this script, the user accepts this agreement and h
 ### Installation:
 No install necessary, just do pip install -r requirements.txt from the hash-it-out directory
 
-There are two test files included in the repository. These are for testing only!
-One is a penetrating testing script and one is a sample txt file. The pentesting script may be flagged by your anti-virus, but as 
-long as it's not being used against you, it's not malware!  
-
-Hashes for the test files:  
-testfile.txt  
--SHA256: 6041def7d1dc8b449bdac33c49c9491e09ec599159dca9ed97ed4c01670ad231  
-
-testfile2.ps1  
--SHA256: 702de94116e6e5826b4cb7a1a5e0be1f55ee6761533119bc08994af78fd040af 
-
-
-
 ### Updates:  
 *This is a work-in-progress.*
 
