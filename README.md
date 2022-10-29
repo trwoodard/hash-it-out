@@ -14,7 +14,7 @@ By downloading and/or running this script, the user accepts this agreement and h
 
 
 ### Installation:
-No install necessary, just do pip install -r requirements.txt from the hash-it-out directory
+No install necessary, just do `pip install -r requirements.txt` from the hash-it-out directory
 
 ### Updates:  
 *This is a work-in-progress.*
