@@ -3,7 +3,8 @@ import hashlib
 import shutil
 import platform
 import requests
-
+from datetime import timezone
+import datetime
 
 '''
 The purpose of this script is to make checking and comparing file hashes easier
@@ -82,52 +83,68 @@ def api_check(api_key):
         return True
 
 
+def vt_lookup(virustotal_api, hash_one):
+    url = 'https://www.virustotal.com/vtapi/v2/file/report'
+    params = {'apikey': virustotal_api,
+              'resource': hash_one}
+    response = requests.get(url, params=params)
+    vt_report = response.json()
+    if vt_report['response_code'] == 1:
+        scanner_names = []
+        positive_count = 0
+        total_scan_count = vt_report['total']
+        for values in vt_report['scans']:
+            scanner_names.append(values)
+        for item in scanner_names:
+            scan_attributes = []
+            sub_dict = vt_report['scans'][item]
+            for key in sub_dict:
+                scan_attributes.append(key)
+            if sub_dict[scan_attributes[0]]:
+                positive_count += 1
+        malware_probability = int((positive_count / total_scan_count) * 100)
+        if malware_probability > 0:
+
+            print('''
+                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                !!!!!!!!!!!!!!! WARNING - MALWARE SUSPECTED !!!!!!!!!!!!!!
+                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                ''' +
+                  f'\n\nVirusTotal scanned your file and {malware_probability}% of '
+                  'sources determined your file to be malicious!\n'
+                  '\nYour VirusTotal scan report is available at: \n' +
+                  vt_report['permalink'] + '\n\n')
+        else:
+            print(f'\nVirusTotal scanned your file and {positive_count} sources flagged it as malicious.')
+    else:
+
+        print('\nYour file was not found in the Virus Total database.\n'
+              'This does not necessarily mean the file is safe.\n'
+              'Proceed with caution! Only open the file if you are sure of its source!')
+
+
 # This will integrate with the VirusTotal API to check the file hash against the online DB
 def vt_check(hash_one):
-    url = 'https://www.virustotal.com/vtapi/v2/file/report'
     virustotal_api = ''
     if api_check(virustotal_api):
-        params = {'apikey': virustotal_api,
-                  'resource': hash_one}
-        response = requests.get(url, params=params)
-        vt_report = response.json()
-        if vt_report['response_code'] == 1:
-            scanner_names = []
-            positive_count = 0
-            total_scan_count = vt_report['total']
-            for values in vt_report['scans']:
-                scanner_names.append(values)
-            for item in scanner_names:
-                scan_attributes = []
-                sub_dict = vt_report['scans'][item]
-                for key in sub_dict:
-                    scan_attributes.append(key)
-                if sub_dict[scan_attributes[0]]:
-                    positive_count += 1
-            malware_probability = int((positive_count / total_scan_count) * 100)
-            if malware_probability > 0:
-
-                print('''
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            !!!!!!!!!!!!!!! WARNING - MALWARE SUSPECTED !!!!!!!!!!!!!!
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            ''' +
-                      f'\n\nVirusTotal scanned your file and {malware_probability}% of '
-                      'sources determined your file to be malicious!\n'
-                      '\nYour VirusTotal scan report is available at: \n' +
-                      vt_report['permalink'] + '\n\n')
-            else:
-                print(f'\nVirusTotal scanned your file and {positive_count} sources flagged it as malicious.')
-        else:
-
-            print('\nYour file was not found in the Virus Total database.\n'
-                  'This does not necessarily mean the file is safe.\n'
-                  'Proceed with caution! Only open the file if you are sure of its source!')
+        vt_lookup(virustotal_api, hash_one)
     else:
-        exit('API ERROR: No API Key found. Program unable to integrate with VirusTotal.\n'
-             'Please modify the script code and enter your API key in the vt_check() function.\n'
-             'The variable name is virustotal_api. You can still run this script,\n'
-             'but it has severely limited functionality.\n')
+        add_api = input('No API key detected! Would you like to add one? Y or N: ').lower()
+        if add_api == 'n':
+            print('\nThe program will not conduct VirusTotal lookups. You can still\n'
+                  'calculate hashes.')
+        elif add_api == 'y':
+            try:
+                virustotal_api = input('Please input the VirusTotal API key: ')
+                if virustotal_api.isalnum():
+                    vt_lookup(virustotal_api, hash_one)
+                else:
+                    print('Invalid API Key!')
+            except:
+                print('Invalid API Key!')
+        else:
+            print('Invalid Option')
+            vt_check(hash_one)
 
 
 # This will take a file, create a directory in the same path as the target file
@@ -184,6 +201,8 @@ def danger_warn():
     ''')
 
 
+
+
 # prints a pretty banner at the start of the program
 def banner():
     print('''
@@ -193,24 +212,27 @@ def banner():
  / __  / /_/ (__  ) / / /  _/ // /_   / /_/ / /_/ / /_  
 /_/ /_/\__,_/____/_/ /_/  /___/\__/   \____/\__,_/\__/  
 
-Created by Timothy Woodard                 version 0.1.3                                             
+Created by Timothy Woodard                 version 0.1.4                                             
     ''')
-
 
 
 def menu():
     print('''
 Available Options:
-    
+
     1) I have the file hash
         ~This option will check a file's hash, compare it with a known hash,
         and check the hash against known malware hashes.
-        
+
     2) I don't have the file hash, but I want to check for malware
         ~This option will check a file's hash and check it against known
         malware hashes. 
+    
+    3) Calculate a file's hash and write it to a log
+        ~This will calculate the hash of a specified file and write that
+        hash to a log file. You can use this to check for file changes.
     ''')
-    user_choice = input('Please select an option (type 1 or 2): ')
+    user_choice = input('Please select an option (type 1, 2, or 3): ')
     return user_choice
 
 
@@ -233,13 +255,27 @@ def main():
                 vt_check(first_hash)
                 store_directory = file_quarantine(filename, filepath)
                 file_be_gone(filename, store_directory)
-        else:
+        elif menu_option == 2:
             filename = input('Enter the file name: ')
             first_hash, filepath = file_to_check(filename)
             print(f"\nYour file's hash is: {first_hash}")
             vt_check(first_hash)
-
-        another_one = input('\n\nWould you like to scan another file? Y or N: ').lower()
+        elif menu_option == 3:
+            filename = input('Enter the file name: ')
+            first_hash, filepath = file_to_check(filename)
+            dt = datetime.datetime.now(timezone.utc)
+            utc_timestamp = dt.timestamp()
+            logfile_name = filename + '_logfile'
+            with open(logfile_name, 'a') as logfile:
+                logfile.write(f'The file "{filename}" was hashed at {utc_timestamp} UNIX time and the SHA256 '
+                              f'hash value was {first_hash}.\n')
+            with open(logfile_name, 'rb') as f:
+                byte_string = f.read()
+                file_hash = hashlib.sha256(byte_string)
+            hash_digest = file_hash.hexdigest()
+            print(f'\nEntry written to log file.\n'
+                  f'New log file hash: {hash_digest}')
+        another_one = input('\n\nWould you like to hash another file? Y or N: ').lower()
         if another_one == 'y':
             print('\n\n')
             main()
