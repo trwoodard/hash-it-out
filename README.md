@@ -16,12 +16,16 @@ By downloading and/or running this script, the user accepts this agreement and h
 ### Installation:
 No install necessary, just do `pip install -r requirements.txt` from the hash-it-out directory
 
-In order to use the VirusTotal API functionality, you **must** add your own API key to the source code. The API is free for personal use and available at [virustotal.com](https://virustotal.com).
+In order to use the VirusTotal API functionality, you **must** add your own API key to the source code or via interactive mode. The API is free for personal use and available at [virustotal.com](https://virustotal.com).
 
 ### Updates:  
 *This is a work-in-progress.*
 
 ### Changelog:
+Version 0.1.4:
+Added ability to calculate a file hash and write that value to a log file. 
+Added ability to add an API key without source code modification.
+
 Version 0.1.3:  
 Added the menu and the option to run the program without a known hash.
 
